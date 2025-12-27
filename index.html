@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Capsule</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #faf9f7;
+            --text-color: #2a2a2a;
+            --accent-color: #c17767;
+            --light-gray: #e8e6e3;
+            --transition-speed: 0.8s;
+            
+            /* Seasonal palette - very soft, low saturation */
+            --spring-bg: #f5f7f3;
+            --spring-border: #c8d5c0;
+            --summer-bg: #faf6f0;
+            --summer-border: #e8d5c0;
+            --rain-bg: #f3f5f7;
+            --rain-border: #c2d1dc;
+            --autumn-bg: #f7f4f0;
+            --autumn-border: #d9c5b3;
+            --winter-bg: #f5f6f7;
+            --winter-border: #d0d5da;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-family: 'Crimson Pro', serif;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            margin-bottom: 2rem;
+        }
+
+        p {
+            font-size: clamp(1rem, 2vw, 1.125rem);
+            font-weight: 300;
+            max-width: 65ch;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Utility Classes */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 0;
+        }
+
+        /* Scroll-based animation states */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--transition-speed) ease, 
+                        transform var(--transition-speed) ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Respect motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .fade-in {
+                transition: opacity 0.3s ease;
+                transform: none;
+            }
+            
+            /* Disable all transform animations */
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Section 1: Intro */
+        #intro {
+            text-align: center;
+        }
+
+        #intro h1 {
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInTitle 1.2s ease forwards;
+        }
+
+        #intro .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: #666;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInTitle 1.2s ease 0.3s forwards;
+        }
+
+        @keyframes fadeInTitle {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .date-display {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 3rem 0;
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .date-item {
+            padding: 1rem;
+            background: rgba(193, 119, 103, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .date-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-color);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .btn:hover {
+            background: #a66356;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(193, 119, 103, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn:hover {
+                transform: none;
+            }
+        }
+
+        /* Section 2, 3, 4: Content Sections */
+        .content-section {
+            text-align: center;
+        }
+
+        .content-section h2 {
+            color: var(--accent-color);
+            margin-bottom: 2.5rem;
+        }
+
+        .content-section .content-text {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            margin: 3rem auto;
+            max-width: 400px;
+        }
+
+        .progress-label {
+            font-size: 2rem;
+            font-family: 'Crimson Pro', serif;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--light-gray);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0;
+            transition: width 2s ease;
+            border-radius: 2px;
+        }
+
+        .progress-fill.animate {
+            width: 100%;
+        }
+
+        /* ===================================================================
+           NEW SEASONAL SECTION STYLES
+           Accordion-style cards with seasonal color themes
+           ================================================================ */
+
+        #seasons {
+            min-height: auto;
+            padding: 5rem 0;
+        }
+
+        .seasons-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .seasons-intro {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .seasons-intro h2 {
+            color: var(--accent-color);
+        }
+
+        .seasons-intro p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Individual Season Card */
+        .season-card {
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .season-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .season-card:hover {
+                transform: none;
+            }
+        }
+
+        /* Season Header - Always visible, clickable */
+        .season-header {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid;
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .season-header:hover {
+            filter: brightness(0.97);
+        }
+
+        .season-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .season-icon {
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .season-card.active .season-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Season Content - Expandable */
+        .season-content {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
+            padding: 0 1.5rem;
+        }
+
+        .season-card.active .season-content {
+            max-height: 500px;
+            opacity: 1;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .season-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #555;
+            font-style: italic;
+        }
+
+        /* Seasonal Color Themes */
+        .season-card.spring .season-header {
+            background: var(--spring-bg);
+            border-left-color: var(--spring-border);
+        }
+
+        .season-card.summer .season-header {
+            background: var(--summer-bg);
+            border-left-color: var(--summer-border);
+        }
+
+        .season-card.rain .season-header {
+            background: var(--rain-bg);
+            border-left-color: var(--rain-border);
+        }
+
+        .season-card.autumn .season-header {
+            background: var(--autumn-bg);
+            border-left-color: var(--autumn-border);
+        }
+
+        .season-card.winter .season-header {
+            background: var(--winter-bg);
+            border-left-color: var(--winter-border);
+        }
+
+        /* Match content background to header */
+        .season-card.spring .season-content {
+            background: var(--spring-bg);
+        }
+
+        .season-card.summer .season-content {
+            background: var(--summer-bg);
+        }
+
+        .season-card.rain .season-content {
+            background: var(--rain-bg);
+        }
+
+        .season-card.autumn .season-content {
+            background: var(--autumn-bg);
+        }
+
+        .season-card.winter .season-content {
+            background: var(--winter-bg);
+        }
+
+        /* ================================================================ */
+
+        /* Section 5: Final Capsule */
+        #capsule {
+            background: linear-gradient(135deg, #f5f3f0 0%, #faf9f7 100%);
+        }
+
+        .capsule-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .capsule-closed {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .capsule-closed.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            position: absolute;
+        }
+
+        .capsule-message {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .capsule-message.revealed {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 2000px;
+        }
+
+        .capsule-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            border: 3px solid var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--accent-color);
+        }
+
+        .message-content {
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            margin-top: 2rem;
+        }
+
+        .message-content h2 {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .message-content p {
+            color: #555;
+            font-size: 1.125rem;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            section {
+                min-height: auto;
+                padding: 3rem 0;
+            }
+
+            .date-display {
+                gap: 0.75rem;
+            }
+
+            .btn {
+                padding: 0.875rem 2rem;
+                font-size: 0.95rem;
+            }
+
+            /* Improved mobile touch targets for seasonal cards */
+            .season-header {
+                padding: 1.25rem;
+                min-height: 64px; /* Touch-friendly height */
+            }
+
+            .season-title {
+                font-size: 1.25rem;
+            }
+
+            .season-content {
+                padding: 0 1.25rem;
+            }
+
+            .season-card.active .season-content {
+                padding: 0 1.25rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Section 1: Intro -->
+    <section id="intro">
+        <div class="container">
+            <h1>A small time capsule.</h1>
+            <p class="subtitle">Sealed one year ago.<br>Opened today.</p>
+            
+            <div class="date-display">
+                <div class="date-item">
+                    <div class="date-label">Sealed</div>
+                    <div id="sealed-date"></div>
+                </div>
+                <div class="date-item">
+                    <div class="date-label">Opened</div>
+                    <div id="opened-date"></div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="scrollToSection('then')">Open</button>
+        </div>
+    </section>
+
+    <!-- Section 2: Then -->
+    <section id="then">
+        <div class="container content-section fade-in">
+            <h2>Then</h2>
+            <p class="content-text">
+                A year ago, the world felt smaller. The days were filled with different rhythms, 
+                different worries, different hopes. You were standing at a threshold, unsure of what 
+                would come but hopeful nonetheless. The person you were then couldn't have known the 
+                shape of the journey ahead—the unexpected turns, the quiet victories, the moments 
+                that would reshape everything.
+            </p>
+            <p class="content-text">
+                That version of you planted seeds without knowing what would grow. Some dreams 
+                felt impossible. Some fears felt permanent. But you sealed this capsule anyway, 
+                believing that time would tell its own story.
+            </p>
+        </div>
+    </section>
+
+    <!-- Section 3: Now -->
+    <section id="now">
+        <div class="container content-section fade-in">
+            <h2>Now</h2>
+            
+            <div class="progress-container">
+                <div class="progress-label" id="days-passed">365 days later</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <p class="content-text">
+                You're not the same person who sealed this capsule. Something has shifted—maybe 
+                in ways you notice every day, maybe in ways you can only see when you look back. 
+                The passage of time has been both kind and challenging, revealing strengths you 
+                didn't know you had and teaching lessons you didn't expect to learn.
+            </p>
+            <p class="content-text">
+                Three hundred and sixty-five days of small moments, accumulated into something 
+                larger than their sum. You've carried forward what mattered and let go of what 
+                didn't. The journey continues, but you're here. That matters more than you know.
+            </p>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Seasonal Timeline -->
+    <section id="seasons">
+        <div class="container">
+            <div class="seasons-intro fade-in">
+                <h2>This Year, in Seasons</h2>
+                <p>Four seasons, each holding its own quiet transformation.</p>
+            </div>
+
+            <div class="seasons-container fade-in">
+                <!-- Spring Card -->
+                <div class="season-card spring" 
+                     role="button" 
+                     tabindex="0"
+                     aria-expanded="false"
+                     aria-controls="spring-content"
+                     data-season="spring">
+                    <div class="season-header">
+                        <h3 class="season-title">Spring</h3>
+                        <span class="season-icon" aria-hidden="true">↓</span>
+                    </div>
+                    <div class="season-content" id="spring-content">
+                        <p class="season-text">
+                            The world woke up, and so did you.
+Some places emptied out, conversations slowed, and a phase quietly ended.
+Not everything made it through the winter, but you did.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Summer Card -->
+                <div class="season-card summer" 
+                     role="button" 
+                     tabindex="0"
+                     aria-expanded="false"
+                     aria-controls="summer-content"
+                     data-season="summer">
+                    <div class="season-header">
+                        <h3 class="season-title">Summer</h3>
+                        <span class="season-icon" aria-hidden="true">↓</span>
+                    </div>
+                    <div class="season-content" id="summer-content">
+                        <p class="season-text">
+                            The days stretched long and warm.
+Things were quieter than before, and conversations slowed.
+Not because anything was wrong, but because life took up more space.
+You learned that not everything needs constant motion to keep going.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rain/Monsoon Card -->
+                <div class="season-card rain" 
+                     role="button" 
+                     tabindex="0"
+                     aria-expanded="false"
+                     aria-controls="rain-content"
+                     data-season="rain">
+                    <div class="season-header">
+                        <h3 class="season-title">Rain</h3>
+                        <span class="season-icon" aria-hidden="true">↓</span>
+                    </div>
+                    <div class="season-content" id="rain-content">
+                        <p class="season-text">
+                            Everything softened under the weight of water. The world turned inward, and so did you. 
+                            Some days felt heavy, but necessary. The rain blurred the edges of things, letting some fade and others take root. You discovered that there's a kind of peace in letting things be.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Autumn Card -->
+                <div class="season-card autumn" 
+                     role="button" 
+                     tabindex="0"
+                     aria-expanded="false"
+                     aria-controls="autumn-content"
+                     data-season="autumn">
+                    <div class="season-header">
+                        <h3 class="season-title">Autumn</h3>
+                        <span class="season-icon" aria-hidden="true">↓</span>
+                    </div>
+                    <div class="season-content" id="autumn-content">
+                        <p class="season-text">
+                            The air changed, and everything began to let go. Not with sadness, but with a quiet 
+                            acceptance. You found beauty in the way things end—in the colors, in the stillness, 
+                            in the knowledge that release makes space for what comes next. You became gentler with 
+                            yourself.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Future -->
+    <section id="future">
+        <div class="container content-section fade-in">
+            <h2>For Later</h2>
+            <p class="content-text">
+                The next year is unwritten. It holds no promises and no guarantees, only 
+                possibility. You'll meet it with everything you've learned and everything 
+                you've become. Some days will feel light, others heavy. Some answers will 
+                arrive, others will remain mysteries a little longer.
+            </p>
+            <p class="content-text">
+                When you look back a year from now, you'll see a path you couldn't have 
+                predicted. That's the gift of time—it surprises us with its capacity for 
+                change and its patience for growth. Whatever comes next, you'll be ready. 
+                Not because everything will be easy, but because you've proven you can move 
+                through difficult things and still find moments of light.
+            </p>
+            <p class="content-text">
+                Keep going. Keep noticing. Keep becoming.
+            </p>
+        </div>
+    </section>
+
+    <!-- Section 5: Capsule Reveal -->
+    <section id="capsule">
+        <div class="container capsule-container">
+            <div class="capsule-closed" id="capsule-closed">
+                <div class="capsule-icon">🎁</div>
+                <h2>One Last Thing</h2>
+                <p>There's a message waiting inside.</p>
+                <button class="btn" id="open-capsule-btn">Open the Capsule</button>
+            </div>
+
+            <div class="capsule-message" id="capsule-message">
+                <div class="message-content">
+                    <h2>Happy Birthday</h2>
+                    <p>
+                        The journey of 52 weeks changed you into someone
+                        <br>your past self wouldn’t have imagined.
+
+                        <br>Not suddenly, and not dramatically —
+                        <br>just slowly, in small ways that added up.
+                    </p>
+                    <p>
+                        You can look back and say to your past self,
+                        <br>“Hey, I did it.”
+                        <br>Because you did.
+                    </p>
+                    <p>
+                        You lived this year honestly,
+                        <br>learning as you went.
+                        <br>Be it a 0.5 change in GPA, or in height,
+                        <br>or that kid sitting beside you —
+                        <br>it all counted in its own way.
+                    </p>
+                    <p>
+                        The journey is still long, and this is only a stretch along the way.
+                        <br>Eighteen will come when it comes, and you’ll meet it as you are.
+
+                        <br>Until then, enjoy being seventeen —
+                        <br>the school days, the small moments,
+                        <br>and the things we don’t always realize we’ll miss.
+                    </p>
+                    <p style="margin-top: 2rem; font-weight: 500; color: var(--accent-color);">
+                        Happy birthday. 🎂
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>A small tradition.<span id="current-year"></span></p>
+    </footer>
+
+    <script>
+        // ===================================================================
+        // DATE CALCULATIONS
+        // ===================================================================
+        
+        /**
+         * Calculate sealed date (today minus 1 year)
+         * and display both sealed and opened dates
+         */
+        function initializeDates() {
+    // Force absolute birthday: 28th (timezone-safe)
+    const openedDate = new Date();
+    openedDate.setDate(28);
+    openedDate.setHours(12, 0, 0, 0); // midday avoids timezone rollover
+
+    const sealedDate = new Date(openedDate);
+    sealedDate.setFullYear(openedDate.getFullYear() - 1);
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+
+    document.getElementById('opened-date').textContent =
+        openedDate.toLocaleDateString('en-US', options);
+
+    document.getElementById('sealed-date').textContent =
+        sealedDate.toLocaleDateString('en-US', options);
+
+    const daysPassed = Math.round(
+        (openedDate - sealedDate) / (1000 * 60 * 60 * 24)
+    );
+
+    document.getElementById('days-passed').textContent =
+        `${daysPassed} days later`;
+
+    document.getElementById('current-year').textContent =
+        openedDate.getFullYear();
+}
+
+
+        // ===================================================================
+        // INTERSECTION OBSERVER FOR SCROLL ANIMATIONS
+        // ===================================================================
+
+        /**
+         * Observe elements and add 'visible' class when they enter viewport
+         * Respects prefers-reduced-motion
+         */
+        function initializeObserver() {
+            const prefersReducedMotion = window.matchMedia(
+                '(prefers-reduced-motion: reduce)'
+            ).matches;
+
+            // If user prefers reduced motion, show everything immediately
+            if (prefersReducedMotion) {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    el.classList.add('visible');
+                });
+                return;
+            }
+
+            // Create observer with threshold for triggering
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            
+                            // Trigger progress bar animation for #now section
+                            if (entry.target.closest('#now')) {
+                                setTimeout(() => {
+                                    document.getElementById('progress-fill')
+                                        .classList.add('animate');
+                                }, 300);
+                            }
+                        }
+                    });
+                },
+                {
+                    threshold: 0.15, // Trigger when 15% visible
+                    rootMargin: '0px 0px -50px 0px' // Offset from bottom
+                }
+            );
+
+            // Observe all fade-in elements
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // ===================================================================
+        // SEASONAL ACCORDION LOGIC
+        // ===================================================================
+
+        /**
+         * Initialize seasonal accordion behavior
+         * - Only one season can be open at a time
+         * - Click/tap toggles expansion
+         * - Keyboard accessible (Enter/Space)
+         * - ARIA attributes updated dynamically
+         */
+        function initializeSeasons() {
+            const seasonCards = document.querySelectorAll('.season-card');
+
+            seasonCards.forEach(card => {
+                // Click handler
+                card.addEventListener('click', () => {
+                    toggleSeason(card, seasonCards);
+                });
+
+                // Keyboard handler (Enter or Space)
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleSeason(card, seasonCards);
+                    }
+                });
+            });
+        }
+
+        /**
+         * Toggle a season card open/closed
+         * Closes all other seasons when opening a new one
+         */
+        function toggleSeason(clickedCard, allCards) {
+            const isCurrentlyActive = clickedCard.classList.contains('active');
+
+            // Close all cards first
+            allCards.forEach(card => {
+                card.classList.remove('active');
+                card.setAttribute('aria-expanded', 'false');
+            });
+
+            // If the clicked card wasn't active, open it
+            if (!isCurrentlyActive) {
+                clickedCard.classList.add('active');
+                clickedCard.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        // ===================================================================
+        // SMOOTH SCROLL NAVIGATION
+        // ===================================================================
+
+        /**
+         * Smooth scroll to a section by ID
+         */
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // ===================================================================
+        // CAPSULE REVEAL INTERACTION
+        // ===================================================================
+
+        /**
+         * Handle capsule opening animation
+         * Fade out the closed state, fade in the message
+         */
+        function initializeCapsule() {
+            const openBtn = document.getElementById('open-capsule-btn');
+            const capsuleClosed = document.getElementById('capsule-closed');
+            const capsuleMessage = document.getElementById('capsule-message');
+
+            openBtn.addEventListener('click', () => {
+                // Hide the closed state
+                capsuleClosed.classList.add('hidden');
+                
+                // Reveal the message after a brief delay
+                setTimeout(() => {
+                    capsuleMessage.classList.add('revealed');
+                }, 400);
+            });
+        }
+
+        // ===================================================================
+        // INITIALIZATION
+        // ===================================================================
+
+        /**
+         * Initialize all functionality when DOM is ready
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDates();
+            initializeObserver();
+            initializeSeasons(); // Initialize new seasonal accordion
+            initializeCapsule();
+        });
+    </script>
+</body>
+</html>
